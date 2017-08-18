@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import React, {Component }from 'react';
 import ReactDom from 'react-dom';
 import SearchBar from './components/search_bar';
@@ -10,26 +11,34 @@ const API_KEY = 'AIzaSyAxCfKbzFqYQV9da2edvNwf1b_qcxkGarg'
 // Creat a new component. This component should 
 // reduce HTML
 class App extends Component{
+
   constructor(props){
    super(props);
 
-   this.state = {
-    videos : [],
-    selectVideo : null
-    };
+    this.state = {
+     videos : [],
+     selectVideo : null
+    };  
 
-   YTSearch({key: API_KEY, term: 'dragoonball z'}, videos =>{
-    this.setState({ 
-      videos: videos,
-      selectVideo:videos[0]
+    this.videoSearch('Dragoon Ball Z')  
+ }
+
+
+videoSearch(term){
+    YTSearch({key: API_KEY, term: term}, videos =>{
+     this.setState({ 
+       videos: videos,
+       selectVideo:videos[0]
        });
     }); 
-  }
+  } 
+
 
   render(){
+    const vSearch = _.debounce((term)=>{this.videoSearch(term)}, 300)
     return (
       <div> 
-       <SearchBar />
+       <SearchBar onSearchTermChange= {vSearch} />
        <VideoDetail video= {this.state.selectVideo} />
        <VideoList 
          onVideoSelect = {selectVideo => {this.setState({selectVideo})}}
@@ -44,3 +53,4 @@ class App extends Component{
 // Take this component's generated HTML and put it 
 // on the page (in the DOM)
 ReactDom.render(<App />, document.querySelector('.container'))
+
